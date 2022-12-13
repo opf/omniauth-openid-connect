@@ -352,6 +352,32 @@ module OmniAuth
         assert_equal 'bar', info[:login]
       end
 
+      def test_info_mail_unique_mapping
+        azure_userinfo = ::OpenIDConnect::ResponseObject::UserInfo.new(
+          sub: SecureRandom.hex(16),
+          name: Faker::Name.name,
+          unique_name: 'foo@example.com',
+          email: nil
+        )
+        strategy.stubs(:user_info).returns(azure_userinfo)
+
+        info = strategy.info
+        assert_equal 'foo@example.com', info[:email]
+      end
+
+      def test_info_mail_default_mapping
+        azure_userinfo = ::OpenIDConnect::ResponseObject::UserInfo.new(
+          sub: SecureRandom.hex(16),
+          name: Faker::Name.name,
+          unique_name: 'foo@example.com',
+          email: 'bar@example.com'
+        )
+        strategy.stubs(:user_info).returns(azure_userinfo)
+
+        info = strategy.info
+        assert_equal 'bar@example.com', info[:email]
+      end
+
       def test_credentials
         strategy.options.issuer = 'example.com'
         strategy.options.client_signing_alg = :RS256

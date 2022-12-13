@@ -27,8 +27,11 @@ module OmniAuth
         def mapped_attributes
           mapping = default_attribute_map.merge(options.attribute_map)
           values = user_info.raw_attributes.symbolize_keys
-          mapping.to_h do |k, v|
-            mapped_value = values[v.to_sym]
+          mapping.to_h do |k, possible_values|
+            mapped_value = Array(possible_values)
+              .filter_map { |v| values[v.to_sym] }
+              .first
+
             [k.to_sym, mapped_value]
           end
         end
@@ -36,7 +39,7 @@ module OmniAuth
         def default_attribute_map
           {
             name: :name,
-            email: :email,
+            email: %i[email unique_name],
             nickname: :preferred_username,
             first_name: :given_name,
             last_name: :family_name,
@@ -52,12 +55,9 @@ module OmniAuth
             if user_info.email_verified.is_a? String
               user_info.email_verified = (user_info.email_verified == "true")
             end
-            user_info.gender = nil # in case someone picks something else than male or female, we don't need it anyway
 
-            # Azure doesn't provide an email by default, but unique_name is the email used to login
-            if user_info.email.blank? && user_info.raw_attributes.has_key?("unique_name")
-              user_info.email = user_info.raw_attributes["unique_name"]
-            end
+            # in case someone picks something else than male or female, we don't need it anyway
+            user_info.gender = nil
           end
         end
       end
