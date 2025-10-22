@@ -40,6 +40,7 @@ class StrategyTestCase < Minitest::Test
       request.stubs(:env).returns({})
       request.stubs(:scheme).returns({})
       request.stubs(:ssl?).returns(false)
+      request.stubs(:path).returns('/')
     end
   end
 

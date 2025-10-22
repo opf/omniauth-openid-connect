@@ -67,7 +67,7 @@ module OmniAuth
         config.stubs(:end_session_endpoint).returns('https://example.com/logout')
         ::OpenIDConnect::Discovery::Provider::Config.stubs(:discover!).with('https://example.com/').returns(config)
 
-        request.stubs(:path_info).returns('/auth/openidconnect/logout')
+        request.stubs(:path).returns('/auth/openidconnect/logout')
 
         strategy.expects(:redirect).with(regexp_matches(expected_redirect))
         strategy.other_phase
@@ -102,7 +102,7 @@ module OmniAuth
         config.stubs(:end_session_endpoint).returns('https://example.com/logout')
         ::OpenIDConnect::Discovery::Provider::Config.stubs(:discover!).with('https://example.com/').returns(config)
 
-        request.stubs(:path_info).returns('/auth/openidconnect/logout')
+        request.stubs(:path).returns('/auth/openidconnect/logout')
 
         strategy.expects(:redirect).with(expected_redirect)
         strategy.other_phase
@@ -112,7 +112,7 @@ module OmniAuth
         strategy.options.issuer = 'example.com'
         strategy.options.client_options.host = 'example.com'
 
-        request.stubs(:path_info).returns('/auth/openidconnect/logout')
+        request.stubs(:path).returns('/auth/openidconnect/logout')
 
         strategy.expects(:call_app!)
         strategy.other_phase
@@ -164,7 +164,7 @@ module OmniAuth
         state = SecureRandom.hex(16)
         nonce = SecureRandom.hex(16)
         request.stubs(:params).returns('code' => code, 'state' => state)
-        request.stubs(:path_info).returns('')
+        request.stubs(:path).returns('')
 
         strategy.options.issuer = 'example.com'
         strategy.options.client_signing_alg = :RS256
@@ -249,7 +249,7 @@ module OmniAuth
         jwks = JSON::JWK::Set.new(JSON.parse(File.read('test/fixtures/jwks.json'))['keys'])
 
         request.stubs(:params).returns('code' => code, 'state' => state)
-        request.stubs(:path_info).returns('')
+        request.stubs(:path).returns('')
 
         strategy.options.client_options.host = 'example.com'
         strategy.options.discovery = true
@@ -290,7 +290,7 @@ module OmniAuth
         state = SecureRandom.hex(16)
         nonce = SecureRandom.hex(16)
         request.stubs(:params).returns('error' => 'invalid_request')
-        request.stubs(:path_info).returns('')
+        request.stubs(:path).returns('')
 
         strategy.call!({'rack.session' => {'omniauth.state' => state, 'omniauth.nonce' => nonce}})
         strategy.expects(:fail!)
@@ -302,7 +302,7 @@ module OmniAuth
         state = SecureRandom.hex(16)
         nonce = SecureRandom.hex(16)
         request.stubs(:params).returns('code' => code, 'state' => 'foobar')
-        request.stubs(:path_info).returns('')
+        request.stubs(:path).returns('')
 
         strategy.call!('rack.session' => { 'omniauth.state' => state, 'omniauth.nonce' => nonce })
         result = strategy.callback_phase
@@ -316,7 +316,7 @@ module OmniAuth
         state = SecureRandom.hex(16)
         nonce = SecureRandom.hex(16)
         request.stubs(:params).returns('code' => code, 'state' => state)
-        request.stubs(:path_info).returns('')
+        request.stubs(:path).returns('')
 
         strategy.options.issuer = 'example.com'
 
@@ -331,7 +331,7 @@ module OmniAuth
         state = SecureRandom.hex(16)
         nonce = SecureRandom.hex(16)
         request.stubs(:params).returns('code' => code, 'state' => state)
-        request.stubs(:path_info).returns('')
+        request.stubs(:path).returns('')
 
         strategy.options.issuer = 'example.com'
 
@@ -346,7 +346,7 @@ module OmniAuth
         state = SecureRandom.hex(16)
         nonce = SecureRandom.hex(16)
         request.stubs(:params).returns('code' => code, 'state' => state)
-        request.stubs(:path_info).returns('')
+        request.stubs(:path).returns('')
 
         strategy.options.issuer = 'example.com'
 
@@ -500,7 +500,7 @@ module OmniAuth
         # the following should fail because the wrong state is passed to the callback
         code = SecureRandom.hex(16)
         request.stubs(:params).returns('code' => code, 'state' => 43)
-        request.stubs(:path_info).returns('')
+        request.stubs(:path).returns('')
         strategy.call!('rack.session' => session)
 
         result = strategy.callback_phase
@@ -526,7 +526,7 @@ module OmniAuth
           token_type: 'Bearer',
         }.to_json
 
-        request.stubs(:path_info).returns('')
+        request.stubs(:path).returns('')
         strategy.call!('rack.session' => { 'omniauth.state' => state, 'omniauth.nonce' => nonce })
 
         id_token = stub('OpenIDConnect::ResponseObject::IdToken')

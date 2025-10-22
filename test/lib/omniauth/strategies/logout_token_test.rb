@@ -54,7 +54,7 @@ module OmniAuth
         callback.expects(:call)
         strategy.options.backchannel_logout_callback = callback
 
-        request.stubs(:path_info).returns('/auth/openidconnect/backchannel-logout')
+        request.stubs(:path).returns('/auth/openidconnect/backchannel-logout')
         strategy.other_phase
       end
 
@@ -66,7 +66,7 @@ module OmniAuth
         callback.expects(:call).never
         strategy.options.backchannel_logout_callback = callback
 
-        request.stubs(:path_info).returns('/auth/openidconnect/backchannel-logout')
+        request.stubs(:path).returns('/auth/openidconnect/backchannel-logout')
         assert_raises(OmniAuth::OpenIDConnect::LogoutToken::InvalidIssuer) do
           strategy.perform_backchannel_logout!(encoded_logout_token)
         end
@@ -79,7 +79,7 @@ module OmniAuth
 
         strategy.options.backchannel_logout_callback = -> {}
 
-        request.stubs(:path_info).returns('/auth/openidconnect/backchannel-logout')
+        request.stubs(:path).returns('/auth/openidconnect/backchannel-logout')
         code, _headers, message = strategy.other_phase
         assert 400, code
         assert "foo", message.first
@@ -93,7 +93,7 @@ module OmniAuth
 
         strategy.options.backchannel_logout_callback = nil
 
-        request.stubs(:path_info).returns('/auth/openidconnect/backchannel-logout')
+        request.stubs(:path).returns('/auth/openidconnect/backchannel-logout')
         strategy.other_phase
       end
     end
